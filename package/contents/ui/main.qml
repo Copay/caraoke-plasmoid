@@ -146,23 +146,23 @@ Item {
     }
     function updateLyric(){
         console.log("meow loading lyrics for ["+ musicName +"]...")
-        request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(a=>{
+        d = []
+        let proc = a=>{
             let res = JSON.parse(a)
-            if(res.body!==null) d=res.body
-            else d=[]
+            if(res.body!==null) return res.body
+            else return []
+        }
+        Promise.all([
+            request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+        ]).then(arr=>{
+            let res = arr.filter(s=>s.length)
+            d = res.length?res[0]:[]
+            currentItem = 0
         })
+        
     }
 
-    // Component {
-    //     id: interpolation
-    //     NumberAnimation {
-    //         property: "currentTime"
-    //         from: currentTimeCache
-    //         to: currentTimeCache+166
-    //         duration: 166
-    //         target: root
-    //     }
-    // }
 
 	Timer {
 		interval: 16
@@ -170,12 +170,6 @@ Item {
 		repeat: true
 		onTriggered: {
 			retrievePosition();
-            // currentTimeCache = currentTime
-            // interpolation.createObject(this, {
-            //         onStopped: ()=>{
-            //             slideAnimation.destroy()
-            //         }
-            // }).start()
 		}
 	}
     
@@ -191,48 +185,6 @@ Item {
         }
     }
 
-    component TextWithTime: Item{
-        property string texts
-        property var t
-        width: mask.width
-        height: mask.height
-        Text {
-            id: mask
-            text: texts
-            font.pointSize: 30
-        }
-        Rectangle {
-            id: bg
-            anchors.top: mask.top
-            anchors.bottom: mask.bottom
-            anchors.left: mask.left
-            anchors.right: mask.right
-            color: PlasmaCore.Theme.textColor
-            Rectangle {
-                id: left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.left: parent.left
-                width: parent.width*t
-                color: "red"//PlasmaCore.Theme.highlightedTextColor
-            }
-            visible: false
-        }
-        
-        OpacityMask {
-            anchors.fill: bg
-            source: bg
-            maskSource: mask
-        }
-    }
-    Component {
-        id: numani
-        NumberAnimation {
-            property: "t"
-            from: 0
-            to: 1
-        }
-    }
     Component {
         id: singleShot
         Timer {
@@ -246,103 +198,6 @@ Item {
     }
 
     property var d: []
-    Plasmoid.fullRepresentation: Item {
-        //Layout.minimumWidth: row.implicitWidth
-        Layout.minimumHeight: row.implicitHeight
-        Layout.preferredWidth: 640 * PlasmaCore.Units.devicePixelRatio
-        clip: true
-
-        id: lyricPanel
-        
-        RowLayout {
-            id: row
-            anchors.centerIn: parent
-            spacing: 0
-            property var slideAnimation
-            Repeater {
-                id: lyricNode
-                model: d[currentItem]?d[currentItem].nodes:[]
-                TextWithTime {
-                    id: twi
-                    texts: modelData.content
-                }
-            }
-            function setclip(){
-                row.anchors.centerIn=undefined
-                //anchors.left = lyricPanel.left
-                slideAnimation = slidani.createObject(this, {
-                    duration: d[currentItem] ? parseInt(d[currentItem].end - d[currentItem].start):0,
-                    onStopped: ()=>{
-                        slideAnimation.destroy()
-                    }
-                })
-                slideAnimation.start()
-            }
-            function setnoclip(){
-                if(slideAnimation)slideAnimation.complete()
-                row.anchors.centerIn=parent
-            }
-        }
-        
-        AnimationController {
-            id: controller
-            progress: d[currentItem] ? (currentTime - d[currentItem].start) / (d[currentItem].end - d[currentItem].start):0
-            SequentialAnimation {
-                id: seq
-            }
-        }
-        Component.onCompleted: {
-            root.currentItem=0
-            updateAnim()
-        }
-        Component {
-            id: numani
-            NumberAnimation {
-                property: "t"
-                from: 0
-                to: 1
-            }
-        }
-        Component {
-            id: slidani
-            NumberAnimation {
-                from: 0
-                to: lyricPanel.width - row.width
-                target: row
-                property: "x"
-                easing.type: Easing.InOutCubic
-            }
-        }
-        function updateAnim() {
-            if(!d[currentItem])return
-            let n = d[currentItem].nodes
-            let anim = []
-            for(let a = 0; a< n.length;a++){
-                anim.push(numani.createObject(lyricPanel,{target:lyricNode.itemAt(a), duration: n[a].end-n[a].start}))
-            }
-            seq.animations = anim
-            controller.progress=0
-            controller.reload()
-            
-            singleShot.createObject(this, {
-                action: ()=>{
-                    if (lyricPanel.width < row.width) {
-                        row.setclip()
-                    }else {
-                        row.setnoclip()
-                    }
-                }, 
-                interval:16}
-            )
-        }
-        Connections {
-            target: root
-            function onCurrentItemChanged() {
-                lyricPanel.updateAnim()
-            }
-            function onCurrentTimeChanged() {
-                controller.progress = d[currentItem] ? (currentTime - d[currentItem].start) / (d[currentItem].end - d[currentItem].start):0
-            }
-        }
-    }
+    Plasmoid.fullRepresentation: FullRepresentation {}
+    Plasmoid.compactRepresentation: CompactRepresentation {}
 }
