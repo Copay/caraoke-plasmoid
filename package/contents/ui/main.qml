@@ -153,8 +153,8 @@ Item {
             else return []
         }
         Promise.all([
-            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
             request("https://krcparse.sinofine.me/163/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
             request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
         ]).then(arr=>{
             let res = arr.filter(s=>s.length)
