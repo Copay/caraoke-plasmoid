@@ -33,9 +33,6 @@ PlasmaExtras.Representation {
                 row.anchors.centerIn=undefined
                 slideAnimation = slidani.createObject(this, {
                     duration: d[currentItem] ? parseInt(d[currentItem].end - d[currentItem].start):0,
-                    onStopped: ()=>{
-                        slideAnimation.destroy()
-                    }
                 })
                 slideAnimation.start()
             }
@@ -62,6 +59,9 @@ PlasmaExtras.Representation {
                 property: "t"
                 from: 0
                 to: 1
+                Component.onDestruction: ()=>{
+                    console.log("numani destroyed")
+                }
             }
         }
         Component {
@@ -72,9 +72,18 @@ PlasmaExtras.Representation {
                 target: row
                 property: "x"
                 easing.type: Easing.InOutCubic
+                onStopped: ()=>{
+                    console.log("slidani stopped")
+                    this.destroy()
+                }
+                Component.onDestruction: ()=>{
+                    console.log("slidani destroyed")
+                }
             }
         }
         function updateAnim() {
+            for(let i = 0; i< seq.animations.length; i++)
+                seq.animations[i].destroy()
             if(!d[currentItem])return
             let n = d[currentItem].nodes
             let anim = []

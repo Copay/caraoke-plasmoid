@@ -18,7 +18,7 @@ Item {
     property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
     property int currentItem
     onCurrentTimeChanged: {
-        if(!d) currentItem = 0
+        if(!d.length) currentItem = 0
         else for(let i = 0; i<d.length;i++){
             if(d[i].start<=currentTime && d[i].end>currentTime) currentItem = i
         }
