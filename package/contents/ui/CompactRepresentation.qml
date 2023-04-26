@@ -59,9 +59,6 @@ PlasmaExtras.Representation {
                 property: "t"
                 from: 0
                 to: 1
-                Component.onDestruction: ()=>{
-                    console.log("numani destroyed")
-                }
             }
         }
         Component {
@@ -73,11 +70,7 @@ PlasmaExtras.Representation {
                 property: "x"
                 easing.type: Easing.InOutCubic
                 onStopped: ()=>{
-                    console.log("slidani stopped")
                     this.destroy()
-                }
-                Component.onDestruction: ()=>{
-                    console.log("slidani destroyed")
                 }
             }
         }
