@@ -1,0 +1,19 @@
+* Caraoke Plasmoid
+KDE widget for representation of lyrics with timeline per words.
+
+** Gallery
+
+
+** Build Structions
+#+begin_src bash
+mkdir -p build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=~/.local .. #install per user
+cmake -DCMAKE_INSTALL_PREFIX=/usr #install system-wide
+ninja install
+#+end_src
+Reload plasmashell to load the widget
+#+begin_src bash
+plasmashell --replace
+#+end_src
+or restart the plasma.
