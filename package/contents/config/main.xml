@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""></kcfgfile>
+
+    <group name="General">
+        <entry name="refreshRate" type="Int">
+            <default>500</default>
+            <label>refresh rate (ms). Smaller value indicates more frequent request for mpris2 and potential memory leaks.</label>
+        </entry>
+        <entry></entry>
+    </group>
+    <group name="Desktop Widget">
+        <entry name="dwidth" type="Int">
+            <default>640</default>
+        </entry>
+        <entry name="dfont" type="Font">
+            <default>sans</default>
+            <label>font family used in desktop widget</label>
+        </entry>
+        <entry name="dfontWeight" type="Int">
+            <default>75</default>
+            <label>font weight used in desktop widget</label>
+        </entry>
+        <entry name="dfontSize" type="Int">
+            <default>36</default>
+            <label>font size used in desktop widget</label>
+        </entry>
+        <entry name="dhighlightedColorDefault" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="dhighlightedColor" type="Color">
+            <default>red</default>
+            <label>highlighted color</label>
+        </entry>
+        <entry name="dunhighlightedColorDefault" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="dunhighlightedColor" type="Color">
+            <default>white</default>
+            <label>unhighlighted color</label>
+        </entry>
+    </group>
+    <group name="Taskbar Widget">
+        <entry name="twidth" type="Int">
+            <default>300</default>
+        </entry>
+        <entry name="tfont" type="Font">
+            <default>sans</default>
+            <label>font family used in taskbar widget</label>
+        </entry>
+        <entry name="tfontWeight" type="Int">
+            <default>50</default>
+            <label>font weight used in taskbar widget</label>
+        </entry>
+        <entry name="tfontSize" type="Int">
+            <default>12</default>
+            <label>font size used in taskbar widget</label>
+        </entry>
+        <entry name="thighlightedColorDefault" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="thighlightedColor" type="Color">
+            <default>white</default>
+            <label>highlighted color</label>
+        </entry>
+        <entry name="tunhighlightedColorDefault" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="tunhighlightedColor" type="Color">
+            <default>grey</default>
+            <label>unhighlighted color</label>
+        </entry>
+    </group>
+</kcfg>
