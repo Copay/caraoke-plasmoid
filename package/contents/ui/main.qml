@@ -38,14 +38,6 @@ Item {
     property bool lastRequest: false
     readonly property double duration: currentMetaData ? currentMetaData["mpris:length"]/1000 || 0 : 0
     onMusicNameChanged: {
-        // if(!lastRequest) singleShot.createObject(this, {
-        //     action: ()=>{
-        //         updateLyric()
-        //         lastRequest=false
-        //     }, 
-        //     interval:16}
-        // )
-        // lastRequest = true
         Qt.callLater(updateLyric)
     }
     
