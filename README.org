@@ -1,6 +1,9 @@
 * Caraoke Plasmoid
 KDE widget for representation of lyrics with timeline per words.
 
+*attention* By default, the widget will use the service provided by [[https://krcparse.sinofine.me]].
+For less load, better and private service, self host is the preferred choice. Refer to [[https://github.com/Copay/krcparse]]
+for more information.
 ** Gallery
 
 
