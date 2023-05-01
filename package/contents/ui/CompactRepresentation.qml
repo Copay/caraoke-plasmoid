@@ -21,18 +21,21 @@ PlasmaExtras.Representation {
             property var slideAnimation
             Repeater {
                 id: lyricNode
-                model: d[currentItem]?d[currentItem].nodes:[]
+                model: currentLyricStr
                 TextWithTime {
                     id: twi
-                    texts: modelData.content
-                    fontSize:12
-                    highlightedTextColor: PlasmaCore.Theme.highlightedTextColor
+                    texts: modelData
+                    fontSize: plasmoid.configuration.tfontSize
+                    fontWeight: plasmoid.configuration.tfontWeight
+                    fontFamily: plasmoid.configuration.tfont.family
+                    unhighlightedTextColor: plasmoid.configuration.tunhighlightedColorDefault ? PlasmaCore.Theme.disabledTextColor : plasmoid.configuration.tunhighlightedColor
+                    highlightedTextColor: plasmoid.configuration.thighlightedColorDefault ? PlasmaCore.Theme.highlightedTextColor : plasmoid.configuration.thighlightedColor
                 }
             }
             function setclip(){
                 row.anchors.centerIn=undefined
                 slideAnimation = slidani.createObject(this, {
-                    duration: d[currentItem] ? parseInt(d[currentItem].end - d[currentItem].start):0,
+                    duration: currentTimeRange[1] ? (currentTimeRange[1] - currentTimeRange[0]) : 0,
                 })
                 slideAnimation.start()
             }
@@ -44,13 +47,11 @@ PlasmaExtras.Representation {
         
         AnimationController {
             id: controller
-            progress: d[currentItem] ? (currentTime - d[currentItem].start) / (d[currentItem].end - d[currentItem].start):0
             SequentialAnimation {
                 id: seq
             }
         }
         Component.onCompleted: {
-            root.currentItem=0
             updateAnim()
         }
         Component {
@@ -75,17 +76,17 @@ PlasmaExtras.Representation {
             }
         }
         function updateAnim() {
-            for(let i = 0; i< seq.animations.length; i++)
-                seq.animations[i].destroy()
-            if(!d[currentItem])return
-            let n = d[currentItem].nodes
+            let tmp = seq.animations
+            if(!currentLyricStr.length)return
             let anim = []
-            for(let a = 0; a< n.length;a++){
-                anim.push(numani.createObject(lyricPanel,{target:lyricNode.itemAt(a), duration: n[a].end-n[a].start}))
+            for(let a = 0; a< currentLyricStr.length;a++){
+                anim.push(numani.createObject(lyricPanel,{target:lyricNode.itemAt(a), duration: currentTimeList[2*a+1]-currentTimeList[2*a]}))
             }
             seq.animations = anim
             controller.progress=0
             controller.reload()
+            for(let i = 0; i< tmp.length; i++)
+                tmp[i].destroy()
             
             singleShot.createObject(this, {
                 action: ()=>{
@@ -104,7 +105,7 @@ PlasmaExtras.Representation {
                 lyricPanel.updateAnim()
             }
             function onCurrentTimeChanged() {
-                controller.progress = d[currentItem] ? (currentTime - d[currentItem].start) / (d[currentItem].end - d[currentItem].start):0
+                controller.progress = currentTimeRange[1] ? (currentTime - currentTimeRange[0]) / (currentTimeRange[1] - currentTimeRange[0]):0
             }
         }
     }

@@ -13,7 +13,8 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: root
-    property int refresh: 160
+    property var d: []
+    property int refresh: plasmoid.configuration.refreshRate
     property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
     property double currentTime
     Behavior on currentTime {
@@ -21,9 +22,12 @@ Item {
     }
     property bool isPlaying: mpris2Source.currentData ? mpris2Source.currentData.PlaybackStatus === "Playing" : false
     property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
-    property int currentItem
+    property int currentItem: 0
+    property var currentTimeRange: d[currentItem] ? [d[currentItem].start,d[currentItem].end] : [0,0]
+    property var currentTimeList: d[currentItem] ? d[currentItem].nodes.reduce((init,curr)=>(init.push(curr.start,curr.end),init),[]): []
+    property var currentLyricStr: d[currentItem] ? d[currentItem].nodes.map(a=>a.content): []
     onCurrentTimeCacheChanged: {
-        if(!currentMetaData.isPlaying) return;
+        if(!isPlaying) return;
         if(!d.length) currentItem = 0
         else for(let i = 0; i<d.length;i++){
             if(d[i].start<=currentTime && d[i].end>currentTime) currentItem = i
@@ -142,17 +146,17 @@ Item {
     function request(url) {
         return new Promise((resolve,reject)=>{
             let xhr = new XMLHttpRequest();
-            xhr.onload = ()=>{
-                if(xhr.status !== 200) reject()
-                else resolve(xhr.responseText)
+            xhr.onreadystatechange = ()=> {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if(xhr.status !== 200) reject()
+                    else resolve(xhr.responseText)
+                }
             };
             xhr.open('GET', url, true);
             xhr.send();
         })
-        
     }
     function updateLyric(){
-        gc()
         console.log("meow loading lyrics for ["+ musicName +"]...")
         d = []
         let proc = a=>{
@@ -166,12 +170,12 @@ Item {
             request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
         ]).then(arr=>{
             let res = arr.filter(s=>s.length)
-            d = res.length?()=>{
-                if(res[0][0].start>0) res[0].unshift({nodes:{start: 0, end: res[0][0].start, content:""}, start: 0, end: res[0][0].start})
-                return res[0]}:[]
+            d = res.length?(()=>{
+                if(res[0][0].start>0) res[0].unshift({nodes:[{start: 0, end: res[0][0].start, content:musicName}], start: 0, end: res[0][0].start})
+                return res[0]
+                })():[]
             currentItem = 0
         })
-        
     }
 
 
@@ -208,7 +212,6 @@ Item {
         }
     }
 
-    property var d: []
     Plasmoid.fullRepresentation: FullRepresentation {}
     Plasmoid.compactRepresentation: CompactRepresentation {}
 }
