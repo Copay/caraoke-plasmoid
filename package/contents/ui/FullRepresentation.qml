@@ -13,6 +13,11 @@ PlasmaExtras.Representation {
         clip: true
 
         id: lyricPanel
+        property font currentFont: Qt.font({
+            pointSize: plasmoid.configuration.dfontSize,
+            weight: plasmoid.configuration.dfontWeight,
+            family: plasmoid.configuration.dfont.family
+        })
         
         RowLayout {
             id: row
@@ -25,9 +30,7 @@ PlasmaExtras.Representation {
                 TextWithTime {
                     id: twi
                     texts: modelData
-                    fontSize: plasmoid.configuration.dfontSize
-                    fontWeight: plasmoid.configuration.dfontWeight
-                    fontFamily: plasmoid.configuration.dfont.family
+                    textFont: currentFont
                 }
             }
             function setclip(){
@@ -86,16 +89,13 @@ PlasmaExtras.Representation {
             for(let i = 0; i< tmp.length; i++)
                 tmp[i].destroy()
             
-            singleShot.createObject(this, {
-                action: ()=>{
-                    if (lyricPanel.width < row.width) {
-                        row.setclip()
-                    }else {
-                        row.setnoclip()
-                    }
-                }, 
-                interval:16}
-            )
+            Qt.callLater(()=>{
+                if (lyricPanel.width < row.width) {
+                    row.setclip()
+                }else {
+                    row.setnoclip()
+                }
+            })
         }
         Connections {
             target: root

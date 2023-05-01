@@ -11,17 +11,13 @@ Item {
     property var t
     property var unhighlightedTextColor: plasmoid.configuration.dunhighlightedColorDefault ? PlasmaCore.Theme.disabledTextColor : plasmoid.configuration.dunhighlightedColor
     property var highlightedTextColor: plasmoid.configuration.dhighlightedColorDefault ? PlasmaCore.Theme.highlightedTextColor : plasmoid.configuration.dhighlightedColor
-    property var fontSize: 30
-    property var fontWeight: Font.Normal
-    property var fontFamily: "sans"
+    property font textFont
     width: mask.width
     height: mask.height
     Text {
         id: mask
         text: texts
-        font.pointSize: fontSize
-        font.weight: fontWeight
-        font.family: fontFamily
+        font: textFont
     }
     Rectangle {
         id: bg

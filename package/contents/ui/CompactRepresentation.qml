@@ -13,7 +13,12 @@ PlasmaExtras.Representation {
         clip: true
 
         id: lyricPanel
-        
+        property font currentFont: Qt.font({
+            pointSize: plasmoid.configuration.tfontSize,
+            weight: plasmoid.configuration.tfontWeight,
+            family: plasmoid.configuration.tfont.family
+        })
+
         RowLayout {
             id: row
             anchors.centerIn: parent
@@ -25,9 +30,7 @@ PlasmaExtras.Representation {
                 TextWithTime {
                     id: twi
                     texts: modelData
-                    fontSize: plasmoid.configuration.tfontSize
-                    fontWeight: plasmoid.configuration.tfontWeight
-                    fontFamily: plasmoid.configuration.tfont.family
+                    textFont: currentFont
                     unhighlightedTextColor: plasmoid.configuration.tunhighlightedColorDefault ? PlasmaCore.Theme.disabledTextColor : plasmoid.configuration.tunhighlightedColor
                     highlightedTextColor: plasmoid.configuration.thighlightedColorDefault ? PlasmaCore.Theme.highlightedTextColor : plasmoid.configuration.thighlightedColor
                 }
@@ -88,16 +91,13 @@ PlasmaExtras.Representation {
             for(let i = 0; i< tmp.length; i++)
                 tmp[i].destroy()
             
-            singleShot.createObject(this, {
-                action: ()=>{
-                    if (lyricPanel.width < row.width) {
-                        row.setclip()
-                    }else {
-                        row.setnoclip()
-                    }
-                }, 
-                interval:16}
-            )
+            Qt.callLater(()=>{
+                if (lyricPanel.width < row.width) {
+                    row.setclip()
+                }else {
+                    row.setnoclip()
+                }
+            })
         }
         Connections {
             target: root

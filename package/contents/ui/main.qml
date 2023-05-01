@@ -15,17 +15,17 @@ Item {
     id: root
     property var d: []
     property int refresh: plasmoid.configuration.refreshRate
-    property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
+    readonly property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
     property double currentTime
     Behavior on currentTime {
         NumberAnimation {duration: refresh}
     }
-    property bool isPlaying: mpris2Source.currentData ? mpris2Source.currentData.PlaybackStatus === "Playing" : false
-    property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
+    readonly property bool isPlaying: mpris2Source.currentData ? mpris2Source.currentData.PlaybackStatus === "Playing" : false
+    readonly property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
     property int currentItem: 0
-    property var currentTimeRange: d[currentItem] ? [d[currentItem].start,d[currentItem].end] : [0,0]
-    property var currentTimeList: d[currentItem] ? d[currentItem].nodes.reduce((init,curr)=>(init.push(curr.start,curr.end),init),[]): []
-    property var currentLyricStr: d[currentItem] ? d[currentItem].nodes.map(a=>a.content): []
+    readonly property var currentTimeRange: d[currentItem] ? [d[currentItem].start,d[currentItem].end] : [0,0]
+    readonly property var currentTimeList: d[currentItem] ? d[currentItem].nodes.reduce((init,curr)=>(init.push(curr.start,curr.end),init),[]): []
+    readonly property var currentLyricStr: d[currentItem] ? d[currentItem].nodes.map(a=>a.content): []
     onCurrentTimeCacheChanged: {
         if(!isPlaying) return;
         if(!d.length) currentItem = 0
@@ -34,19 +34,19 @@ Item {
         }
         currentTime = currentTimeCache + refresh
     }
-    property string musicName: track + " " + artist
+    readonly property string musicName: track + " " + artist
     property bool lastRequest: false
-    property double duration: currentMetaData ? currentMetaData["mpris:length"]/1000 || 0 : 0
+    readonly property double duration: currentMetaData ? currentMetaData["mpris:length"]/1000 || 0 : 0
     onMusicNameChanged: {
-        if(!lastRequest) singleShot.createObject(this, {
-            action: ()=>{
-                updateLyric()
-                lastRequest=false
-            }, 
-            interval:16}
-        )
-        lastRequest = true
-        
+        // if(!lastRequest) singleShot.createObject(this, {
+        //     action: ()=>{
+        //         updateLyric()
+        //         lastRequest=false
+        //     }, 
+        //     interval:16}
+        // )
+        // lastRequest = true
+        Qt.callLater(updateLyric)
     }
     
     property string track: {
@@ -197,18 +197,6 @@ Item {
             plasmoid.status = PlasmaCore.Types.ActiveStatus
         } else {
             updatePlasmoidStatusTimer.restart()
-        }
-    }
-
-    Component {
-        id: singleShot
-        Timer {
-            property var action
-            running: true
-            onTriggered: {
-                if (action) action() // To check, whether it is a function, would be better.
-                this.destroy()
-            }
         }
     }
 
