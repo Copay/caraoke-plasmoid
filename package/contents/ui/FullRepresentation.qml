@@ -7,7 +7,8 @@ import org.kde.plasma.plasma5support 2.0 as P5Support
 import org.kde.plasma.extras 2.0 as PlasmaExtras
 import QtGraphicalEffects 1.0
 
-PlasmaExtras.Representation {
+MouseArea {
+        Plasmoid.backgroundHints: PlasmaCore.Types.ShadowBackground | PlasmaCore.Types.ConfigurableBackground
         Layout.minimumHeight: row.implicitHeight
         Layout.preferredWidth: plasmoid.configuration.dwidth * PlasmaCore.Units.devicePixelRatio
         clip: true

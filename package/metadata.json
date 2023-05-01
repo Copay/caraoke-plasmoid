@@ -1,4 +1,5 @@
 {
+    "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Authors": [
             {
@@ -52,5 +53,6 @@
     },
     "X-Plasma-API": "declarativeappletscript",
     "X-Plasma-DBusActivationService": "org.mpris.MediaPlayer2.*",
-    "X-Plasma-MainScript": "ui/main.qml"
+    "X-Plasma-MainScript": "ui/main.qml",
+    "X-Plasma-StandAloneApp": true
 }

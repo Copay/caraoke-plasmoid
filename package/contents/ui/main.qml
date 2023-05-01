@@ -14,6 +14,7 @@ import QtGraphicalEffects 1.0
 Item {
     id: root
     property var d: []
+    //property bool trans: false
     property int refresh: plasmoid.configuration.refreshRate
     readonly property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
     property double currentTime
@@ -179,9 +180,12 @@ Item {
 			retrievePosition();
 		}
 	}
-    
+    function action_transparent(){
+        trans = !trans
+    }
     Component.onCompleted: {
-        mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
+        //mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
+        //Plasmoid.setAction("transparent","toggle desktop widght transparent")
         updateMprisSourcesModel()
     }
     onStateChanged: {
