@@ -6,22 +6,18 @@ import org.kde.plasma.components 2.0 as PlasmaComponents
 import org.kde.plasma.plasma5support 2.0 as P5Support
 import QtGraphicalEffects 1.0
 
-Item{
+Item {
     property string texts
     property var t
-    property var unhighlightedTextColor: PlasmaCore.Theme.disabledTextColor
-    property var highlightedTextColor: PlasmaCore.Theme.highlightedTextColor
-    property var fontSize: 30
-    property var fontWeight: Font.Normal
-    property var fontFamily: "sans"
+    property var unhighlightedTextColor: plasmoid.configuration.dunhighlightedColorDefault ? PlasmaCore.Theme.disabledTextColor : plasmoid.configuration.dunhighlightedColor
+    property var highlightedTextColor: plasmoid.configuration.dhighlightedColorDefault ? PlasmaCore.Theme.highlightedTextColor : plasmoid.configuration.dhighlightedColor
+    property font textFont
     width: mask.width
     height: mask.height
     Text {
         id: mask
         text: texts
-        font.pointSize: fontSize
-        font.weight: fontWeight
-        font.family: fontFamily
+        font: textFont
     }
     Rectangle {
         id: bg

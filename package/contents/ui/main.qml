@@ -13,29 +13,33 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: root
-    property double currentTimeCache
-    property double currentTime: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
-    property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
-    property int currentItem
-    onCurrentTimeChanged: {
-        if(!d) currentItem = 0
+    property var d: []
+    //property bool trans: false
+    property int refresh: plasmoid.configuration.refreshRate
+    readonly property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
+    property double currentTime
+    Behavior on currentTime {
+        NumberAnimation {duration: refresh}
+    }
+    readonly property bool isPlaying: mpris2Source.currentData ? mpris2Source.currentData.PlaybackStatus === "Playing" : false
+    readonly property var currentMetaData: mpris2Source.currentData ? mpris2Source.currentData.Metadata : undefined
+    property int currentItem: 0
+    readonly property var currentTimeRange: d[currentItem] ? [d[currentItem].start,d[currentItem].end] : [0,0]
+    readonly property var currentTimeList: d[currentItem] ? d[currentItem].nodes.reduce((init,curr)=>(init.push(curr.start,curr.end),init),[]): []
+    readonly property var currentLyricStr: d[currentItem] ? d[currentItem].nodes.map(a=>a.content): []
+    onCurrentTimeCacheChanged: {
+        if(!isPlaying) return;
+        if(!d.length) currentItem = 0
         else for(let i = 0; i<d.length;i++){
             if(d[i].start<=currentTime && d[i].end>currentTime) currentItem = i
         }
+        currentTime = currentTimeCache + refresh
     }
-    property string musicName: track + " " + artist
+    readonly property string musicName: track + " " + artist
     property bool lastRequest: false
-    property double duration: currentMetaData ? currentMetaData["mpris:length"]/1000 || 0 : 0
+    readonly property double duration: currentMetaData ? currentMetaData["mpris:length"]/1000 || 0 : 0
     onMusicNameChanged: {
-        if(!lastRequest) singleShot.createObject(this, {
-            action: ()=>{
-                updateLyric()
-                lastRequest=false
-            }, 
-            interval:16}
-        )
-        lastRequest = true
-        
+        Qt.callLater(updateLyric)
     }
     
     property string track: {
@@ -135,14 +139,15 @@ Item {
     function request(url) {
         return new Promise((resolve,reject)=>{
             let xhr = new XMLHttpRequest();
-            xhr.onload = ()=>{
-                if(xhr.status !== 200) reject()
-                else resolve(xhr.responseText)
+            xhr.onreadystatechange = ()=> {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if(xhr.status !== 200) reject()
+                    else resolve(xhr.responseText)
+                }
             };
             xhr.open('GET', url, true);
             xhr.send();
         })
-        
     }
     function updateLyric(){
         console.log("meow loading lyrics for ["+ musicName +"]...")
@@ -153,29 +158,34 @@ Item {
             else return []
         }
         Promise.all([
-            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
             request("https://krcparse.sinofine.me/163/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
             request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
         ]).then(arr=>{
             let res = arr.filter(s=>s.length)
-            d = res.length?res[0]:[]
+            d = res.length?(()=>{
+                if(res[0][0].start>0) res[0].unshift({nodes:[{start: 0, end: res[0][0].start, content:musicName}], start: 0, end: res[0][0].start})
+                return res[0]
+                })():[]
             currentItem = 0
         })
-        
     }
 
 
 	Timer {
-		interval: 16
+		interval: refresh
 		running: true
 		repeat: true
 		onTriggered: {
 			retrievePosition();
 		}
 	}
-    
+    function action_transparent(){
+        trans = !trans
+    }
     Component.onCompleted: {
-        mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
+        //mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
+        //Plasmoid.setAction("transparent","toggle desktop widght transparent")
         updateMprisSourcesModel()
     }
     onStateChanged: {
@@ -186,19 +196,6 @@ Item {
         }
     }
 
-    Component {
-        id: singleShot
-        Timer {
-            property var action
-            running: true
-            onTriggered: {
-                if (action) action() // To check, whether it is a function, would be better.
-                this.destroy()
-            }
-        }
-    }
-
-    property var d: []
     Plasmoid.fullRepresentation: FullRepresentation {}
     Plasmoid.compactRepresentation: CompactRepresentation {}
 }
