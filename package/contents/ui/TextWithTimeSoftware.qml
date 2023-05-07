@@ -46,27 +46,4 @@ Item {
     onTChanged: {
         canvas.requestPaint()
     }
-    // Rectangle {
-    //     id: bg
-    //     anchors.top: mask.top
-    //     anchors.bottom: mask.bottom
-    //     anchors.left: mask.left
-    //     anchors.right: mask.right
-    //     color: unhighlightedTextColor
-    //     Rectangle {
-    //         id: left
-    //         anchors.top: parent.top
-    //         anchors.bottom: parent.bottom
-    //         anchors.left: parent.left
-    //         width: parent.width*t
-    //         color: highlightedTextColor
-    //     }
-    //     visible: false
-    // }
-    
-    // OpacityMask {
-    //     anchors.fill: bg
-    //     source: bg
-    //     maskSource: mask
-    // }
 }

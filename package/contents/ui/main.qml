@@ -174,7 +174,6 @@ Item {
     }
 
     Component.onCompleted: {
-        //mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
         updateMprisSourcesModel()
         d=[]
     }
