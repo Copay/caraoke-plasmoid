@@ -25,15 +25,6 @@ MouseArea {
             anchors.centerIn: parent
             spacing: 0
             property var slideAnimation
-            Repeater {
-                id: lyricNode
-                model: currentLyricStr
-                TextWithTime {
-                    id: twi
-                    texts: modelData
-                    textFont: currentFont
-                }
-            }
             function setclip(){
                 row.anchors.centerIn=undefined
                 slideAnimation = slidani.createObject(this, {
@@ -65,6 +56,12 @@ MouseArea {
             }
         }
         Component {
+            id: twi
+            TextWithTime {
+                textFont: currentFont
+            }
+        }
+        Component {
             id: slidani
             NumberAnimation {
                 from: 0
@@ -78,17 +75,24 @@ MouseArea {
             }
         }
         function updateAnim() {
-            let tmp = seq.animations
-            if(!currentLyricStr.length)return
-            let anim = []
-            for(let a = 0; a< currentLyricStr.length;a++){
-                anim.push(numani.createObject(lyricPanel,{target:lyricNode.itemAt(a), duration: currentTimeList[2*a+1]-currentTimeList[2*a]}))
+            let tmprow = row.children
+            let tmpanim = seq.animations
+            for(let i = 0; i< tmprow.length; i++){
+                tmprow[i].destroy()
+                tmpanim[i].destroy()
             }
+            if(!currentLyricStr||!currentLyricStr.length) return
+            let anim = []
+            let rowdata = []
+            for(let a = 0; a< currentLyricStr.length;a++){
+                rowdata.push(twi.createObject(row, {texts: currentLyricStr[a]}))
+                anim.push(numani.createObject(lyricPanel,{target:rowdata[a], duration: currentTimeList[2*a+1]-currentTimeList[2*a]}))
+            }
+            row.children = rowdata
             seq.animations = anim
             controller.progress=0
             controller.reload()
-            for(let i = 0; i< tmp.length; i++)
-                tmp[i].destroy()
+            
             
             Qt.callLater(()=>{
                 if (lyricPanel.width < row.width) {
@@ -101,6 +105,9 @@ MouseArea {
         Connections {
             target: root
             function onCurrentItemChanged() {
+                lyricPanel.updateAnim()
+            }
+            function onLyricUpdated() {
                 lyricPanel.updateAnim()
             }
             function onCurrentTimeChanged() {

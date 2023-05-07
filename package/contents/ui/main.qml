@@ -13,8 +13,7 @@ import QtGraphicalEffects 1.0
 
 Item {
     id: root
-    property var d: []
-    //property bool trans: false
+    property var d
     property int refresh: plasmoid.configuration.refreshRate
     readonly property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
     property double currentTime
@@ -72,6 +71,7 @@ Item {
 
         engine: "mpris2"
         connectedSources: sources
+        interval: refresh
 
         onSourceAdded: source => {
             updateMprisSourcesModel()
@@ -149,6 +149,7 @@ Item {
             xhr.send();
         })
     }
+    signal lyricUpdated()
     function updateLyric(){
         console.log("meow loading lyrics for ["+ musicName +"]...")
         d = []
@@ -165,35 +166,17 @@ Item {
             let res = arr.filter(s=>s.length)
             d = res.length?(()=>{
                 if(res[0][0].start>0) res[0].unshift({nodes:[{start: 0, end: res[0][0].start, content:musicName}], start: 0, end: res[0][0].start})
+                lyricUpdated()
                 return res[0]
                 })():[]
             currentItem = 0
         })
     }
 
-
-	Timer {
-		interval: refresh
-		running: true
-		repeat: true
-		onTriggered: {
-			retrievePosition();
-		}
-	}
-    function action_transparent(){
-        trans = !trans
-    }
     Component.onCompleted: {
         //mpris2Source.serviceForSource("@multiplex").enableGlobalShortcuts()
-        //Plasmoid.setAction("transparent","toggle desktop widght transparent")
         updateMprisSourcesModel()
-    }
-    onStateChanged: {
-        if (state != "") {
-            plasmoid.status = PlasmaCore.Types.ActiveStatus
-        } else {
-            updatePlasmoidStatusTimer.restart()
-        }
+        d=[]
     }
 
     Plasmoid.fullRepresentation: FullRepresentation {}
