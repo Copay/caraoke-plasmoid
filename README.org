@@ -5,8 +5,9 @@ KDE widget for representation of lyrics with timeline per words.
 For less load, better and private service, self host is the preferred choice. Refer to [[https://github.com/Copay/krcparse]]
 for more information.
 ** Gallery
+https://user-images.githubusercontent.com/11085755/236714377-e2c4f3b1-c500-4b93-ade8-28dcf60b1bd3.mp4
 
-
+[[https://user-images.githubusercontent.com/11085755/236714470-ba992b85-5ca9-4f9b-8496-88106e90cb01.png]]
 ** Build Structions
 #+begin_src bash
 mkdir -p build
