@@ -15,6 +15,7 @@ Item {
     id: root
     property var d
     property int refresh: plasmoid.configuration.refreshRate
+    readonly property string apiServerAddress: plasmoid.configuration.apiServerAddress || "https://krcparse.sinofine.me"
     readonly property double currentTimeCache: (mpris2Source.currentData && mpris2Source.currentData.Position)/1000 || 0
     property double currentTime
     Behavior on currentTime {
@@ -151,7 +152,7 @@ Item {
     }
     signal lyricUpdated()
     function updateLyric(){
-        console.log("meow loading lyrics for ["+ musicName +"]...")
+        console.log("meow loading lyrics for ["+ musicName +"] with API server ["+ apiServerAddress +"]...")
         d = []
         let proc = a=>{
             let res = JSON.parse(a)
@@ -159,9 +160,9 @@ Item {
             else return []
         }
         Promise.all([
-            request("https://krcparse.sinofine.me/163/"+encodeURIComponent(musicName)+"?body=1").then(proc),
-            request("https://krcparse.sinofine.me/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
-            request("https://krcparse.sinofine.me/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request(apiServerAddress+"/163/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request(apiServerAddress+"/kugou/"+encodeURIComponent(musicName)+"?body=1").then(proc),
+            request(apiServerAddress+"/qq/"+encodeURIComponent(musicName)+"?body=1").then(proc),
         ]).then(arr=>{
             let res = arr.filter(s=>s.length)
             d = res.length?(()=>{

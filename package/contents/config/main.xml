@@ -7,6 +7,10 @@
             <default>500</default>
             <label>refresh rate (ms). Smaller value indicates more frequent request for mpris2 and potential memory leaks.</label>
         </entry>
+        <entry name="apiServerAddress" type="String">
+            <default>https://krcparse.sinofine.me</default>
+            <label>The server address for the API that get lyrics.</label>
+        </entry>
         <entry></entry>
     </group>
     <group name="Desktop Widget">
