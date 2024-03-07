@@ -1,10 +1,9 @@
-import QtQuick 2.1
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import org.kde.plasma.plasma5support 2.0 as P5Support
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
+import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.plasma5support as P5Support
 
 Item {
     property string texts
@@ -25,25 +24,25 @@ Item {
         width: mask.width
         height: mask.height
         onPaint: {
-            let ctx = getContext('2d')
-            ctx.textAlign = 'left'
-            ctx.textBaseline = 'middle'
-            ctx.font = textFont.weight+ ' ' + textFont.pointSize+ 'pt "'+ textFont.family+ '"'
+            let ctx = getContext('2d');
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.font = textFont.weight + ' ' + textFont.pointSize + 'pt "' + textFont.family + '"';
             //if(t===0) {
-                ctx.fillStyle = unhighlightedTextColor
-                ctx.fillText(texts,0,height/2)
-                ctx.fillStyle = highlightedTextColor
+            ctx.fillStyle = unhighlightedTextColor;
+            ctx.fillText(texts, 0, height / 2);
+            ctx.fillStyle = highlightedTextColor;
             //}
-            ctx.save()
-            ctx.beginPath()
-            ctx.clearRect(0,0,width*t,height)
-            ctx.rect(0,0,width*t,height)
-            ctx.clip()
-            ctx.fillText(texts,0,height/2)
-            ctx.restore()
+            ctx.save();
+            ctx.beginPath();
+            ctx.clearRect(0, 0, width * t, height);
+            ctx.rect(0, 0, width * t, height);
+            ctx.clip();
+            ctx.fillText(texts, 0, height / 2);
+            ctx.restore();
         }
     }
     onTChanged: {
-        canvas.requestPaint()
+        canvas.requestPaint();
     }
 }

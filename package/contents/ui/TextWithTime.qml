@@ -1,10 +1,10 @@
-import QtQuick 2.1
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
-import org.kde.plasma.plasmoid 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import org.kde.plasma.plasma5support 2.0 as P5Support
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
+import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.plasma5support as P5Support
+import Qt5Compat.GraphicalEffects
 
 Item {
     property string texts
@@ -31,12 +31,12 @@ Item {
             anchors.top: parent.top
             anchors.bottom: parent.bottom
             anchors.left: parent.left
-            width: parent.width*t
+            width: parent.width * t
             color: highlightedTextColor
         }
         visible: false
     }
-    
+
     OpacityMask {
         anchors.fill: bg
         source: bg

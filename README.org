@@ -2,7 +2,7 @@
 KDE widget for representation of lyrics with timeline per words.
 
 *attention* By default, the widget will use the service provided by [[https://krcparse.sinofine.me]].
-For less load, better and private service, self host is the preferred choice. Refer to [[https://github.com/Copay/krcparse]]
+For less load, better and *private* service, self host is the *highly* preferred choice. Refer to [[https://github.com/Copay/krcparse]]
 for more information.
 ** Gallery
 https://user-images.githubusercontent.com/11085755/236714377-e2c4f3b1-c500-4b93-ade8-28dcf60b1bd3.mp4
@@ -10,11 +10,8 @@ https://user-images.githubusercontent.com/11085755/236714377-e2c4f3b1-c500-4b93-
 [[https://user-images.githubusercontent.com/11085755/236714470-ba992b85-5ca9-4f9b-8496-88106e90cb01.png]]
 ** Build Structions
 #+begin_src bash
-mkdir -p build
-cd build
-cmake -DCMAKE_INSTALL_PREFIX=~/.local .. #install per user
-cmake -DCMAKE_INSTALL_PREFIX=/usr #install system-wide
-ninja install
+mkdir -p ~/.local/share/plasma/plasmoids/com.github.sinofine.caraoke
+cp -r package/* ~/.local/share/plasma/plasmoids/com.github.sinofine.caraoke
 #+end_src
 Reload plasmashell to load the widget
 #+begin_src bash
