@@ -11,14 +11,17 @@
             <default>https://krcparse.sinofine.me</default>
             <label>The server address for the API that get lyrics.</label>
         </entry>
-        <entry></entry>
+        <entry name="playerFilter" type="String">
+            <default>.*</default>
+            <label>Regexp String for allowed players, it filters objectName, for example, you can set "Gapless|NeteaseCloudMusicGtk4".</label>
+        </entry>
     </group>
     <group name="Desktop Widget">
         <entry name="dwidth" type="Int">
             <default>640</default>
         </entry>
         <entry name="dfont" type="Font">
-            <default>sans</default>
+            <default>sans,26,-1,5,400,0,0,0,0,0,0,0,0,0,0,1</default>
             <label>font family used in desktop widget</label>
         </entry>
         <entry name="dfontWeight" type="Int">
@@ -49,7 +52,7 @@
             <default>300</default>
         </entry>
         <entry name="tfont" type="Font">
-            <default>sans</default>
+            <default>sans,12,-1,5,400,0,0,0,0,0,0,0,0,0,0,1</default>
             <label>font family used in taskbar widget</label>
         </entry>
         <entry name="tfontWeight" type="Int">

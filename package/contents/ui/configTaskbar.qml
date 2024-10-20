@@ -8,8 +8,6 @@ import org.kde.plasma.plasmoid
 KCM.SimpleKCM {
     property alias cfg_twidth: twidth.value
     property alias cfg_tfont: tfontDialog.selectedFont
-    property alias cfg_tfontWeight: tfontWeight.value
-    property alias cfg_tfontSize: tfontSize.value
     property alias cfg_thighlightedColorDefault: thighlightedColorDefault.checked
     property alias cfg_thighlightedColor: tcolorDialogForHC.selectedColor
     property alias cfg_tunhighlightedColorDefault: tunhighlightedColorDefault.checked
@@ -26,25 +24,16 @@ KCM.SimpleKCM {
         }
 
         QQC2.Button {
-            text: tfontDialog.selectedFont.family
-            Kirigami.FormData.label: "taskbar font's family"
+            text: `${tfontDialog.selectedFont.family} ${tfontDialog.selectedFont.styleName} ${tfontDialog.selectedFont.pointSize}`
+            Kirigami.FormData.label: "taskbar font"
             onClicked: tfontDialog.open()
         }
         FontDialog {
             id: tfontDialog
             selectedFont: plasmoid.configuration.tfont
-        }
-        QQC2.SpinBox {
-            id: tfontWeight
-            Kirigami.FormData.label: "font's weight"
-            from: 0
-            to: 1000
-        }
-        QQC2.SpinBox {
-            id: tfontSize
-            Kirigami.FormData.label: "font's size"
-            from: 10
-            to: 100
+            onAccepted: {
+                console.log(selectedFont)
+            }
         }
         QQC2.CheckBox {
             id: thighlightedColorDefault

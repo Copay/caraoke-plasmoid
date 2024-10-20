@@ -8,8 +8,6 @@ import org.kde.plasma.plasmoid
 KCM.SimpleKCM {
     property alias cfg_dwidth: dwidth.value
     property alias cfg_dfont: fontDialog.selectedFont
-    property alias cfg_dfontWeight: dfontWeight.value
-    property alias cfg_dfontSize: dfontSize.value
     property alias cfg_dhighlightedColorDefault: dhighlightedColorDefault.checked
     property alias cfg_dhighlightedColor: colorDialogForHC.selectedColor
     property alias cfg_dunhighlightedColorDefault: dunhighlightedColorDefault.checked
@@ -26,25 +24,16 @@ KCM.SimpleKCM {
         }
 
         QQC2.Button {
-            text: fontDialog.selectedFont.family
-            Kirigami.FormData.label: "desktop font's family"
+            text: `${fontDialog.selectedFont.family} ${fontDialog.selectedFont.styleName} ${fontDialog.selectedFont.pointSize}`
+            Kirigami.FormData.label: "desktop font"
             onClicked: fontDialog.open()
         }
         FontDialog {
             id: fontDialog
             selectedFont: plasmoid.configuration.dfont
-        }
-        QQC2.SpinBox {
-            id: dfontWeight
-            Kirigami.FormData.label: "font's weight"
-            from: 0
-            to: 1000
-        }
-        QQC2.SpinBox {
-            id: dfontSize
-            Kirigami.FormData.label: "font's size"
-            from: 10
-            to: 100
+            onAccepted: {
+                console.log(JSON.stringify(selectedFont))
+            }
         }
         QQC2.CheckBox {
             id: dhighlightedColorDefault

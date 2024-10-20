@@ -13,9 +13,11 @@ import org.kde.plasma.private.mpris as Mpris
 PlasmoidItem {
     id: root
     property var d
+    property var lastRequestTerm
     property int refresh: plasmoid.configuration.refreshRate
     readonly property string apiServerAddress: plasmoid.configuration.apiServerAddress || "https://krcparse.sinofine.me"
     readonly property double currentTimeCache: (mpris2Model.currentPlayer?.position) / 1000 ?? 0
+    property double oldtimecache
     property double currentTime
     Behavior on currentTime {
         NumberAnimation {
@@ -31,6 +33,14 @@ PlasmoidItem {
             mpris2Model.currentPlayer?.updatePosition();
         }
     }
+    Timer {
+        id: changeLyricSelectionTimer
+        repeat: false
+        onTriggered: {
+            // console.log(`done, interval: ${interval}`)
+            mpris2Model.currentPlayer?.updatePosition();
+        }
+    }
     readonly property bool isPlaying: mpris2Model.currentPlayer?.playbackStatus === Mpris.PlaybackStatus.Playing
     /* readonly property var currentMetaData: mpris2Model.currentPlayer?.Metadata ?? undefined */
     property int currentItem: 0
@@ -40,19 +50,21 @@ PlasmoidItem {
     onCurrentTimeCacheChanged: {
         if (!isPlaying)
             return;
-        if (!d.length)
+        if (!d || !d.length)
             currentItem = 0;
         else
             for (let i = 0; i < d.length; i++) {
                 if (d[i].start <= currentTime && d[i].end > currentTime)
                     currentItem = i;
             }
-        currentTime = currentTimeCache + refresh;
+        currentTime = currentTimeCache + refresh || 0;
+        oldtimecache = currentTimeCache || 0;
     }
     readonly property string musicName: track + " " + artist
     property bool lastRequest: false
     readonly property double duration: mpris2Model.currentPlayer?.length / 1000 ?? 0
     onMusicNameChanged: {
+        if(!(new RegExp(plasmoid.configuration.playerFilter)).test(mpris2Model.currentPlayer?.objectName)) return;
         Qt.callLater(updateLyric);
     }
 
@@ -84,7 +96,10 @@ PlasmoidItem {
     }
     signal lyricUpdated
     function updateLyric() {
-        console.log("meow loading lyrics for [" + musicName + "] with API server [" + apiServerAddress + "]...");
+        let currentMusicName = musicName.trim();
+        if(lastRequestTerm == currentMusicName) return;
+        if (!currentMusicName || !currentMusicName.length) return; // Do not proceed null name.
+        console.log("meow loading lyrics for [" + currentMusicName + "] with API server [" + apiServerAddress + "]...");
         d = [];
         let proc = a => {
             let res = JSON.parse(a);
@@ -93,7 +108,8 @@ PlasmoidItem {
             else
                 return [];
         };
-        Promise.all([request(apiServerAddress + "/163/" + encodeURIComponent(musicName) + "?body=1").then(proc), request(apiServerAddress + "/kugou/" + encodeURIComponent(musicName) + "?body=1").then(proc), request(apiServerAddress + "/qq/" + encodeURIComponent(musicName) + "?body=1").then(proc),]).then(arr => {
+        Promise.all([request(apiServerAddress + "/163/" + encodeURIComponent(currentMusicName) + "?body=1").then(proc), request(apiServerAddress + "/kugou/" + encodeURIComponent(currentMusicName) + "?body=1").then(proc), request(apiServerAddress + "/qq/" + encodeURIComponent(currentMusicName) + "?body=1").then(proc),]).then(arr => {
+            if(currentMusicName !== musicName) return; // Encountered the wrong music.
             let res = arr.filter(s => s.length);
             d = res.length ? (() => {
                     if (res[0][0].start > 0)
@@ -102,16 +118,18 @@ PlasmoidItem {
                                 {
                                     start: 0,
                                     end: res[0][0].start,
-                                    content: musicName
+                                    content: currentMusicName
                                 }
                             ],
                             start: 0,
                             end: res[0][0].start
                         });
-                    lyricUpdated();
+                    
                     return res[0];
                 })() : [];
             currentItem = 0;
+            if(d.length &&d.length>0)lyricUpdated();
+            console.log("Music Queried. ")
         });
     }
 

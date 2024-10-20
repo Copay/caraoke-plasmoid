@@ -8,6 +8,7 @@ KCM.SimpleKCM {
 
     property alias cfg_refreshRate: refreshRate.value
     property alias cfg_apiServerAddress: apiServerAddress.text
+    property alias cfg_playerFilter: playerFilter.text
     Kirigami.FormLayout {
         id: page
 
@@ -24,6 +25,11 @@ KCM.SimpleKCM {
             validator: RegularExpressionValidator {
                 regularExpression: /https?\/\/[-a-z0-9]+(\.[-a-z0-9]*\..*)/
             }
+        }
+        QQC2.TextField {
+            id: playerFilter
+            Kirigami.FormData.label: "Allowed players"
+            placeholderText: "Gapless|NeteaseCloudMusicGtk4"
         }
     }
 }

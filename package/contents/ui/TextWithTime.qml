@@ -12,6 +12,7 @@ Item {
     property var unhighlightedTextColor: plasmoid.configuration.dunhighlightedColorDefault ? PlasmaCore.Theme.disabledTextColor : plasmoid.configuration.dunhighlightedColor
     property var highlightedTextColor: plasmoid.configuration.dhighlightedColorDefault ? PlasmaCore.Theme.highlightedTextColor : plasmoid.configuration.dhighlightedColor
     property font textFont
+
     width: mask.width
     height: mask.height
     Text {

@@ -12,11 +12,12 @@ MouseArea {
     Layout.minimumHeight: row.implicitHeight
     Layout.preferredWidth: plasmoid.configuration.dwidth
     clip: true
-    property font currentFont: Qt.font({
-        pointSize: plasmoid.configuration.dfontSize,
-        weight: plasmoid.configuration.dfontWeight,
-        family: plasmoid.configuration.dfont.family
-    })
+    property font currentFont: plasmoid.configuration.dfont
+    
+    TextMetrics {
+        id: trueTextSizer
+        font: currentFont
+    }
 
     RowLayout {
         id: row
@@ -25,6 +26,9 @@ MouseArea {
         property var slideAnimation
         function setclip() {
             row.anchors.centerIn = undefined;
+            if (slideAnimation)
+                slideAnimation.destroy();
+            row.x = 0;
             slideAnimation = slidani.createObject(this, {
                 duration: currentTimeRange[1] ? (currentTimeRange[1] - currentTimeRange[0]) : 0
             });
@@ -32,8 +36,9 @@ MouseArea {
         }
         function setnoclip() {
             if (slideAnimation)
-                slideAnimation.complete();
+                slideAnimation.destroy();
             row.anchors.centerIn = parent;
+            row.x = null;
         }
     }
 
@@ -62,12 +67,13 @@ MouseArea {
     }
     Component {
         id: slidani
-        NumberAnimation {
+        SmoothedAnimation {
             from: 0
-            to: lyricPanel.width - row.width
+            to: lyricPanel.width - trueTextSizer.width
             target: row
             property: "x"
             easing.type: Easing.InOutCubic
+            velocity: -1
             onStopped: () => {
                 this.destroy();
             }
@@ -93,22 +99,24 @@ MouseArea {
                 duration: currentTimeList[2 * a + 1] - currentTimeList[2 * a]
             }));
         }
+        trueTextSizer.text = currentLyricStr.join("")
         row.children = rowdata;
         seq.animations = anim;
         controller.progress = 0;
         controller.reload();
-        Qt.callLater(() => {
-            if (lyricPanel.width < row.width) {
+            if (lyricPanel.width < trueTextSizer.width) {
                 row.setclip();
             } else {
                 row.setnoclip();
             }
-        });
+        return currentTimeList[currentTimeList.length-1] || 0
     }
     Connections {
         target: root
         function onCurrentItemChanged() {
-            lyricPanel.updateAnim();
+            changeLyricSelectionTimer.interval = lyricPanel.updateAnim() || 0;
+            changeLyricSelectionTimer.running = true;
+
         }
         function onLyricUpdated() {
             lyricPanel.updateAnim();
